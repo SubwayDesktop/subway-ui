@@ -1,3 +1,6 @@
+'use strict';
+
+
 function assignMethods(constructor, methods){
     var I;
     for(I in methods)
@@ -24,14 +27,22 @@ var Layout = {
     }),
     Cell: document.registerElement('layout-cell', {
 	prototype: {
-	    __proto__: HTMLElement.prototype
+	    __proto__: HTMLElement.prototype,
+	    createdCallback: function(){
+		Object.defineProperty(this, 'fixed', {
+		    get: function(){
+			return this.getAttribute('fixed');
+		    },
+		    set: function(value){
+			this.setAttribute('fixed', value);
+		    }
+		});
+	    }
 	}
     })
 };
 
 
-/* The following code need to be modified in order to fit changes of simple.js */
-/*
 var Widget = {
     TabContent: document.registerElement('widget-tab-content', {
 	prototype: {
@@ -74,17 +85,16 @@ var Widget = {
 	    __proto__: HTMLElement.prototype
 	}
     }),
-    TabBarButton: document.registerElement('widget-tab-bar-button', {
+    Tab: document.registerElement('widget-tab', {
 	prototype: {
 	    createdCallback: function(){
 		this.draggable = true;
-		this.tabbar = null;
-		this.dataset.name = '';
+		this.tab_list = null;
 	    },
 	    __proto__: HTMLElement.prototype
 	}
     }),
-    TabBarLabel: document.registerElement('widget-tab-bar-label', {
+    TabLabel: document.registerElement('widget-tab-label', {
 	prototype: {
 	    createdCallback: function(){
 
@@ -92,64 +102,42 @@ var Widget = {
 	    __proto__: HTMLElement.prototype
 	}
     }),
-    TabBarCloseButton: document.registerElement('widget-tab-bar-close-button',{
+    TabCloseButton: document.registerElement('widget-tab-close-button',{
 	prototype: {
 	    createdCallback: function(){
 		this.textContent = '\u00D7';
-		this.tabbar = null;
-		this.dataset.name = '';
+		this.tab_list = null;
 	    },
 	    __proto__: HTMLElement.prototype
 	}
     }),
-    TabBar: document.registerElement('widget-tab-bar', {
+    TabList: document.registerElement('widget-tab-list', {
 	prototype: {
 	    createdCallback: function(){
+		this.widget_map = new Map();
 		this.$currentTab = null;
-		this.tabs = {};
 		this.$dragSrc = null;
-		Object.defineProperty(this, 'layout', {
-		    get: function(){
-			return this.getAttribute('layout');
-		    },
-		    set: function(value){
-			this.setAttribute('layout', value);
-		    }
-		});
 	    },
-	    addTab: function(name, tab_closable){
-		var label = create('widget-tab-bar-label', {
-		    textContent: name
-		});
-		if(tab_closable)
-		    var close_button = create('widget-tab-bar-close-button', {
-			tabbar: this,
-			dataset: {
-			    name: name
-			}
-		    });
-		var tab = create('widget-tab-bar-button', {
-		    tabbar: this,
-		    dataset: {
-			name: name
-		    },
-		    children: [
-			label,
-			close_button
-		    ]
-		}, true);
+	    addTab: function(widget, label_text, closable){
+		var tabList = this;
+		var label = create('widget-tab-label', label_text);
+		var close_button;
+		if(closable)
+		    close_button = create('widget-tab-close-button');
+		var tab = create('widget-tab', [label, close_button]);
 		if(this.children.length){
 		    tab.dataset.current = 'false';
 		}else{
-		    this.$currentTab = name;
+		    this.$currentTab = tab;
 		    tab.dataset.current = 'true';
 		}
+		this.widget_map.set(tab, widget);
 		// ----
 		var tabClicked = function(){
-		    this.tabbar.$change(this.dataset.name);
+		    tabList.$change(this);
 		};
 		var dragstart = function(ev){
-		    this.tabbar.$dragSrc = this;
+		    tabList.$dragSrc = this;
 		    ev.dataTransfer.effectAllowed = 'move';
 		    ev.dataTransfer.setData('text/plain', 'anything');
 		};
@@ -157,69 +145,73 @@ var Widget = {
 		    ev.preventDefault();
 		};
 		var drop = function(ev){
-		    var src = this.tabbar.$dragSrc;
+		    var src = tabList.$dragSrc;
 		    ev.preventDefault();
 		    ev.stopPropagation();
+		    /* avoid dragging from another tab list */
+		    if(!src)
+			return;
 		    if(this != src)
-			this.tabbar.swapTab(this, src);
-		    this.tabbar.$dragSrc = null;
-		}
+			tabList.$swapTab(this, src);
+		    tabList.$dragSrc = null;
+		};
 		tab.addEventListener('click', tabClicked);
 		tab.addEventListener('dragstart', dragstart);
 		tab.addEventListener('dragover', dragover);
 		tab.addEventListener('drop', drop);
-		if(tab_closable){
-		    var closeButtonClicked = function(ev){
-			this.tabbar.$tabclose(this.dataset.name);
+		var closeButtonClicked;
+		if(closable){
+		    closeButtonClicked = function(ev){
+			tabList.$tabclose(this.parentElement);
 			ev.stopPropagation();
-		    }
+		    };
 		    close_button.addEventListener('click', closeButtonClicked);
 		}
-		this.tabs[name] = tab;
 		this.appendChild(tab);
 	    },
-	    swapTab: function(tab1, tab2){
-		var temp = create('widget-tab-bar-button');
+	    $swapTab: function(tab1, tab2){
+		var temp = create('widget-tab-list-item');
 		this.insertBefore(temp, tab1);
 		this.insertBefore(tab1, tab2);
 		this.insertBefore(tab2, temp);
 		this.removeChild(temp);
 	    },
-	    $change: function(name){
-		this.tabs[this.$currentTab].dataset.current = 'false';
-		this.tabs[name].dataset.current = 'true';
-		this.$currentTab = name;
+	    $change: function(tab){
+		var widget = this.widget_map.get(tab);
+		this.$currentTab.dataset.current = 'false';
+		tab.dataset.current = 'true';
+		this.$currentTab = tab;
 		
 		var ev = new CustomEvent('change', {
 		    detail: {
-			tab_name: name
+			widget: widget
 		    }
 		});
 		this.dispatchEvent(ev);
 	    },
-	    $tabclose: function(name){
-		var tab = this.tabs[name];
+	    $tabclose: function(tab){
+		var widget = this.widget_map.get(tab);
 		var prev = tab.previousElementSibling;
 		var next = tab.nextElementSibling;
-		if(name == this.$currentTab){
+		if(tab == this.$currentTab){
 		    if(next){
-			this.$currentTab = next.dataset.name;
-			next.dataset.current = 'true';		    
+			this.$currentTab = next;
+			next.dataset.current = 'true';
 		    }else if(prev){
-			this.$currentTab = prev.dataset.name;
+			this.$currentTab = prev;
 			prev.dataset.current = 'true';
 		    }else{
-			this.$currentTab = null;
+			this.$currentWidget = null;
 		    }
 		}
 		this.removeChild(tab);
-		delete this.tabs[name];
+		this.widget_map.delete(tab);
 		
 		var ev = new CustomEvent('tabclose', {
 		    detail: {
-			tab_name: name,
-			prev: (prev)? prev.dataset.name: '',
-			next: (next)? next.dataset.name: ''
+			widget: widget,
+			prev: (prev)? this.widget_map.get(prev): null,
+			next: (next)? this.widget_map.get(next): null
 		    }
 		});
 		this.dispatchEvent(ev);
@@ -231,29 +223,25 @@ var Widget = {
 
 
 var Binding = {
-    TabWidget: function(tab_bar, tab_content){
-	this.tab_content = tab_content;
-	this.tab_bar = tab_bar;
-	this.tabs = {};
-	var _this = this;
+    TabWidget: function(tab_list, tab_content){
+	var tabWidget = this;
 	var tabChanged = function(ev){
-	    _this.tab_content.setCurrentWidget(_this.tabs[ev.detail.tab_name]);
+	    tab_content.setCurrentWidget(ev.detail.widget);
 	};
 	var tabClosed = function(ev){
-	    _this.tab_content.removeWidget(_this.tabs[ev.detail.tab_name], _this.tabs[ev.detail.prev], _this.tabs[ev.detail.next]);
-	}
-	this.tab_bar.addEventListener('change', tabChanged);
-	this.tab_bar.addEventListener('tabclose', tabClosed);
+	    tab_content.removeWidget(ev.detail.widget, ev.detail.prev, ev.detail.next);
+	};
+	tab_list.addEventListener('change', tabChanged);
+	tab_list.addEventListener('tabclose', tabClosed);
 	if(!Binding.TabWidget.$init){
 	    assignMethods(Binding.TabWidget, {
 		addTab: function(widget, label, closable){
-		    this.tab_content.addWidget(widget);
-		    this.tab_bar.addTab(label, closable);
-		    this.tabs[label] = widget;
+		    tab_content.addWidget(widget);
+		    tab_list.addTab(widget, label, closable);
 		}
 	    });
 	    Binding.TabWidget.$init = true;
 	}
     }
 }
-*/
+

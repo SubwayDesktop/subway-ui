@@ -4,10 +4,12 @@ body {
     height: 100vh;
 }
 
+
 layout-container {
     width: 100%;
     height: 100%;
 }
+
 
 layout-HBox, layout-VBox {
     display: flex;
@@ -15,67 +17,61 @@ layout-HBox, layout-VBox {
     height: 100%;
 }
 
+
 layout-cell {
-    display: flex;
     flex-grow: 1;
+    flex-shrink: 0;
     box-sizing: border-box;
 }
+
+
+layout-cell[fixed] {
+    flex-grow: 0;
+}
+
 
 layout-HBox {
     flex-direction: row;
 }
 
+
 layout-HBox > layout-cell {
     height: 100%;
 }
+
 
 layout-VBox {
     flex-direction: column;
 }
 
+
 layout-VBox > layout-cell {
     width: 100%;
 }
 
-.ui_tab_bar {
-    padding: 3px;
+
+widget-tab-list {
+    display: flex;
+    flex-direction: column;
 }
 
-widget-tab-bar-button {
-    background-color: white;
-    color: #999;
+
+widget-tab {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-shrink: 0;
+    width: 100%;
     cursor: pointer;
-    -moz-user-select: none;
     -webkit-user-select: none;
 }
 
-widget-tab-bar[layout="horizontal"] > widget-tab-bar-button {
-    display: inline;
-    border: 0.1em solid #999;
-    margin: 0.1em 0.3em;
-    padding: 0.1em 0.3em;
+
+widget-tab-close-button {
+
 }
 
-widget-tab-bar[layout="vertical"] > widget-tab-bar-button {
-    display: block;
-}
 
-widget-tab-bar-button[data-current="true"] {
-    color: black;
-}
-
-widget-tab-bar[layout="horizontal"] > widget-tab-bar-button[data-current="true"] {
-    border: 0.1em solid black;
-}
-
-widget-tab-bar[layout="vertical"] widget-tab-bar-close-button {
-    float: right;
-}
-
-widget-tab-bar-close-button {
-    margin-left: 0.5em;
-}
-
-.ui_tab_content {
-    padding: 3px;
+widget-tab[data-current="true"] > widget-tab-label {
+    font-weight: bold;
 }
