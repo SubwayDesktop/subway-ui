@@ -170,7 +170,7 @@ var Widget = {
 		this.appendChild(tab);
 	    },
 	    $swapTab: function(tab1, tab2){
-		var temp = create('widget-tab-list-item');
+		var temp = create('widget-tab');
 		this.insertBefore(temp, tab1);
 		this.insertBefore(tab1, tab2);
 		this.insertBefore(tab2, temp);
