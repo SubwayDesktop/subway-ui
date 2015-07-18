@@ -201,7 +201,7 @@ var Widget = {
 			this.$currentTab = prev;
 			prev.dataset.current = 'true';
 		    }else{
-			this.$currentWidget = null;
+			this.$currentTab = null;
 		    }
 		}
 		this.removeChild(tab);
