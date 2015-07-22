@@ -21,8 +21,11 @@ let I18N_ITEMS = [
 
 
 function init_i18n(app_name){
+    /* UNIX-like only now */
     let lang = process.env.LC_MESSAGES || process.env.LC_ALL;
     lang = lang.replace(/\..*/, '');
+    if(!lang)
+	return;
     let file = printf('locale/%1/LC_MESSAGES/%2.mo', lang, app_name);
     if(fs.existsSync(file))
 	gettext.addTextdomain(lang, fs.readFileSync(file));
