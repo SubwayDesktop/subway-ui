@@ -4,6 +4,28 @@
 'use strict';
 
 
+const HEADER = (function(){/*
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-07-22 23:47+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+*/}).toString().replace(/^.+?\/\*\n|\*\/\}\s*$/g, '');
+
+
 var fs = require('fs');
 
 
@@ -40,6 +62,7 @@ function work(filename){
 	    return -1;
 	return 0;
     });
+    console.log(HEADER);
     for(let msgid of keys){
 	console.log('#:' + file_token + msg_set[msgid].join(file_token));
 	console.log('msgid "'+ msgid +'"');
