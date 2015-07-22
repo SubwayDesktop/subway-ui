@@ -22,7 +22,7 @@ let I18N_ITEMS = [
 
 function init_i18n(app_name){
     /* UNIX-like only now */
-    let lang = process.env.LC_MESSAGES || process.env.LC_ALL;
+    let lang = process.env.LANGUAGE || process.env.LC_ALL || process.env.LC_MESSAGES || process.env.LANG;
     lang = lang.replace(/\..*/, '');
     if(!lang)
 	return;
