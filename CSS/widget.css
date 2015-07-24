@@ -1,0 +1,25 @@
+widget-tab-list {
+    display: flex;
+    flex-direction: column;
+}
+
+
+widget-tab {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-shrink: 0;
+    width: 100%;
+    cursor: pointer;
+    -webkit-user-select: none;
+}
+
+
+widget-tab-close-button {
+
+}
+
+
+widget-tab[data-current="true"] > widget-tab-label {
+    font-weight: bold;
+}

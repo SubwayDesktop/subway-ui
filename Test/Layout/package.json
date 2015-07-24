@@ -1,6 +1,6 @@
 {
 	"name": "Layout Test",
-	"main": "layout.html",
+	"main": "test_layout.html",
 	"window": {
     		"toolbar": true,
 		"position": "center"
