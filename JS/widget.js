@@ -69,7 +69,7 @@ var Widget = {
     TabList: document.registerElement('widget-tab-list', {
 	prototype: {
 	    createdCallback: function(){
-		this.widget_map = new Map();
+		this.$map = new Map();
 		this.$currentTab = null;
 		this.$dragSrc = null;
 	    },
@@ -86,7 +86,7 @@ var Widget = {
 		    this.$currentTab = tab;
 		    tab.dataset.current = 'true';
 		}
-		this.widget_map.set(tab, widget);
+		this.$map.set(tab, widget);
 		// ----
 		var tabClicked = function(){
 		    tabList.$change(this);
@@ -132,7 +132,7 @@ var Widget = {
 		this.removeChild(temp);
 	    },
 	    $change: function(tab){
-		var widget = this.widget_map.get(tab);
+		var widget = this.$map.get(tab);
 		this.$currentTab.dataset.current = 'false';
 		tab.dataset.current = 'true';
 		this.$currentTab = tab;
@@ -145,7 +145,7 @@ var Widget = {
 		this.dispatchEvent(ev);
 	    },
 	    $tabclose: function(tab){
-		var widget = this.widget_map.get(tab);
+		var widget = this.$map.get(tab);
 		var prev = tab.previousElementSibling;
 		var next = tab.nextElementSibling;
 		if(tab == this.$currentTab){
@@ -160,13 +160,13 @@ var Widget = {
 		    }
 		}
 		this.removeChild(tab);
-		this.widget_map.delete(tab);
+		this.$map.delete(tab);
 		
 		var ev = new CustomEvent('tabclose', {
 		    detail: {
 			widget: widget,
-			prev: (prev)? this.widget_map.get(prev): null,
-			next: (next)? this.widget_map.get(next): null
+			prev: (prev)? this.$map.get(prev): null,
+			next: (next)? this.$map.get(next): null
 		    }
 		});
 		this.dispatchEvent(ev);
