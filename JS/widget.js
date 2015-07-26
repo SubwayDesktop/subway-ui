@@ -173,6 +173,51 @@ var Widget = {
 	    },
 	    __proto__: HTMLElement.prototype
 	}
+    }),
+    ListItem: document.registerElement('widget-list-item', {
+	prototype: {
+	    createdCallback: function(){
+
+	    },
+	    __proto__: HTMLElement.prototype
+	}
+    }),
+    ListView: document.registerElement('widget-list-view', {
+	prototype: {
+	    createdCallback: function(){
+
+	    },
+	    insert: function(item, next_sibling){
+		if(next_sibling)
+		    this.insertBefore(item, next_sibling);
+		else
+		    this.appendChild(item);
+	    },
+	    remove: function(item){
+		this.removeChild(item);
+	    },
+	    empty: function(){
+		while(this.firstChild)
+		    this.removeChild(this.firstChild);
+	    },
+	    __proto__: HTMLElement.prototype
+	}
+    }),
+    Message: document.registerElement('widget-message', {
+	prototype: {
+	    createdCallback: function(){
+
+	    },
+	    __proto__: HTMLElement.prototype
+	}
+    }),
+    MessageStream: document.registerElement('widget-message-stream', {
+	prototype: {
+	    createdCallback: function(){
+
+	    },
+	    __proto__: HTMLElement.prototype
+	}
     })
 }
 
