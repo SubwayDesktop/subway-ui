@@ -1,4 +1,4 @@
 {
-	"name": "Tab Test",
+	"name": "org.subway.test.tabwidget",
 	"main": "test_tab.html"
 }

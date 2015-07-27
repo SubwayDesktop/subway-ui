@@ -1,5 +1,5 @@
 {
-	"name": "Layout Test",
+	"name": "org.subway.test.layout",
 	"main": "test_layout.html",
 	"window": {
     		"toolbar": true,
