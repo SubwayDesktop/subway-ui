@@ -47,7 +47,7 @@ function init_fs(options){
 	ensure_dir(data_dir);
 }
 
-    
+
 function read_record(){
     return fs_ext.readJSONSync(record_file);
 }

@@ -1,12 +1,7 @@
-{
+(function(){
 
 
-let Gettext = require('node-gettext');
-let fs = require('fs');
-let gettext = new Gettext();
-
-
-let I18N_ITEMS = [
+const I18N_ITEMS = [
     {
 	property_get: 'text',
 	property_set: 'textContent'
@@ -16,6 +11,11 @@ let I18N_ITEMS = [
 	property_set: 'title'
     }
 ];
+
+
+var Gettext = require('node-gettext');
+var fs = require('fs');
+var gettext = new Gettext();
 
 
 function init_i18n(app_name){
@@ -37,7 +37,7 @@ function _(msgid, msgid_pl, n){
 }
 
 
-function translateUI(){
+function translate_UI(){
     for(let i=0; i<I18N_ITEMS.length; i++){
 	let item = I18N_ITEMS[i];
 	let elements = $All(printf('[data-%1]', item.property_get));
@@ -47,10 +47,13 @@ function translateUI(){
 }
 
 
-window.init_i18n = init_i18n;
 window._ = _;
-window.translateUI = translateUI;
+window.i18n = {
+    init: init_i18n,
+    translate_UI: translate_UI
+};
 
 
-}
+})();
+
 

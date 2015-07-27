@@ -243,6 +243,6 @@ var Binding = {
 	    Binding.TabWidget.$init = true;
 	}
     }
-}
+};
 
 
