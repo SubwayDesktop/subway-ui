@@ -9,3 +9,5 @@ An html5-based UI library for creating a modern webapp.
 Required Node.js modules:
 
 - node-gettext
+
+- fs-extra
