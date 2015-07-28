@@ -1,4 +1,4 @@
 {
-	"name": "org.subway.test.tabwidget",
-	"main": "test_tab.html"
+	"name": "test_tab_widget",
+	"main": "test_tab_widget.html"
 }

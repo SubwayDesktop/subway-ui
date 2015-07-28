@@ -1,6 +1,7 @@
 (function(){
 
 
+const APP_NAME = require('nw.gui').App.manifest.name;
 const I18N_ITEMS = [
     {
 	property_get: 'text',
@@ -18,15 +19,16 @@ var fs = require('fs');
 var gettext = new Gettext();
 
 
-function init_i18n(app_name){
+function init_i18n(){
     /* UNIX-like only now */
     let lang = process.env.LANGUAGE || process.env.LC_ALL || process.env.LC_MESSAGES || process.env.LANG;
     lang = lang.replace(/\..*/, '');
     if(!lang)
 	return;
-    let file = printf('locale/%1/LC_MESSAGES/%2.mo', lang, app_name);
+    let file = printf('locale/%1/LC_MESSAGES/%2.mo', lang, APP_NAME);
     if(fs.existsSync(file))
 	gettext.addTextdomain(lang, fs.readFileSync(file));
+    translate_ui();
 }
 
 
@@ -37,7 +39,7 @@ function _(msgid, msgid_pl, n){
 }
 
 
-function translate_UI(){
+function translate_ui(){
     for(let i=0; i<I18N_ITEMS.length; i++){
 	let item = I18N_ITEMS[i];
 	let elements = $All(printf('[data-%1]', item.property_get));
@@ -49,8 +51,7 @@ function translate_UI(){
 
 window._ = _;
 window.i18n = {
-    init: init_i18n,
-    translate_UI: translate_UI
+    init: init_i18n
 };
 
 

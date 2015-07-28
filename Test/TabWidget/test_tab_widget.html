@@ -12,6 +12,7 @@
     <script type="text/javascript">
     var test_tab_bar, test_tab_content, add, tabs, count = 3;
     function init(){
+	i18n.init();	
 	assignGlobalObjects({
 	    test_tab_list: '#tab_list',
 	    test_tab_content: '#tab_content',
@@ -28,7 +29,6 @@
 	}
 	add.addEventListener('click', add_clicked);
     }
-    window.addEventListener('load', translateUI);
     window.addEventListener('load', init);
     </script>
     <title>TabWidget Test</title>
