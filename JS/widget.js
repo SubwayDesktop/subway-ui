@@ -211,7 +211,7 @@ var Widget = {
 	    __proto__: HTMLElement.prototype
 	}
     }),
-    MessageStream: document.registerElement('widget-message-stream', {
+    ChatBox: document.registerElement('widget-chat-box', {
 	prototype: {
 	    createdCallback: function(){
 
