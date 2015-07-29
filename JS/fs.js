@@ -11,7 +11,7 @@ const SETTINGS_DIR = BASE_DIR + '/settings';
 var fs_ext = require('fs-extra');
 
 
-var record_file, settings_dir, data_dir;
+var record_file, settings_file, data_dir;
 
 
 function path(){
@@ -25,26 +25,31 @@ function path(){
 }
 
 
-function ensure_dir(dir){
-    fs_ext.ensureDirSync(dir);
-}
-
-
-function ensure_file(file){
-    fs_ext.ensureFileSync(file);
-}
-
-
 function init_fs(options){
     record_file = path(RECORD_DIR, APP_NAME);
-    settings_dir = path(SETTINGS_DIR, APP_NAME);
+    settings_file = path(SETTINGS_DIR, APP_NAME);
     data_dir = path(DATA_DIR, APP_NAME);
     if(options.record)
-	ensure_file(record_file);
-    if(options.settings)
-	ensure_dir(settings_dir);
+	fs_ext.ensureFileSync(record_file);
     if(options.data)
-	ensure_dir(data_dir);
+	fs_ext.ensureDirSync(data_dir);
+    let default_settings = {};
+    for(let category of options.settings){
+	/* values of items of the current category */
+	let default_values = {};
+	for(let item of category.items)
+	    default_values[item.name] = item.default;
+	/* category.category means name of the current category */
+	default_settings[category.category] = default_values;
+    }
+    if(options.settings){
+	if(!fs_ext.existsSync(settings_file)){
+	    fs_ext.ensureFileSync(settings_file);
+	    fs_ext.writeJSONFileSync(settings_file, default_settings);
+	}else{
+	    fs_ext.ensureFileSync(settings_file);
+	}
+    }
 }
 
 
