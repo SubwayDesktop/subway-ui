@@ -15,6 +15,16 @@ widget-tab {
 }
 
 
+widget-tab[data-drag_enter_state="top2bottom"] {
+    box-shadow: inset 0px -0.1em gold;
+}
+
+
+widget-tab[data-drag_enter_state="bottom2top"] {
+    box-shadow: inset 0px 0.1em gold;
+}
+
+
 widget-tab-close-button {
 
 }

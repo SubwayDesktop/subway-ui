@@ -13,10 +13,6 @@ var Widget = {
 	    },
 	    removeWidget: function(widget, prev, next){
 		if(widget == this.$currentWidget){
-		    if(!prev)
-			prev = widget.previousElementSibling;
-		    if(!next)
-			next = widget.nextElementSibling;
 		    if(next){
 			show(next);
 			this.$currentWidget = next;
@@ -88,48 +84,82 @@ var Widget = {
 		}
 		this.$map.set(tab, widget);
 		// ----
-		var tabClicked = function(){
+		var tab_clicked = function(){
 		    tabList.$change(this);
 		};
-		var dragstart = function(ev){
+		var drag_start = function(ev){
 		    tabList.$dragSrc = this;
 		    ev.dataTransfer.effectAllowed = 'move';
+		    ev.dataTransfer.setDragImage(new Image(), 0 ,0);
 		    ev.dataTransfer.setData('text/plain', 'anything');
 		};
-		var dragover = function(ev){
+		var drag_over = function(ev){
 		    ev.preventDefault();
+		    ev.dataTransfer.dropEffect = 'move';
+		};
+		var drag_enter = function(ev){
+		    var iterator = nextElementIterator(tabList.$dragSrc);
+		    var top2bottom = false;
+		    for(let node of iterator){
+			if(node == this){
+			    top2bottom = true;
+			    break;
+			}
+		    }
+		    this.dataset.drag_enter_state = top2bottom? 'top2bottom': 'bottom2top';
+		};
+		var drag_leave = function(ev){
+		    delete this.dataset.drag_enter_state;
 		};
 		var drop = function(ev){
 		    var src = tabList.$dragSrc;
 		    ev.preventDefault();
 		    ev.stopPropagation();
+		    delete this.dataset.drag_enter_state;
 		    /* avoid dragging from another tab list */
 		    if(!src)
 			return;
 		    if(this != src)
-			tabList.$swapTab(this, src);
+			tabList.$moveTab(this, src);
 		    tabList.$dragSrc = null;
 		};
-		tab.addEventListener('click', tabClicked);
-		tab.addEventListener('dragstart', dragstart);
-		tab.addEventListener('dragover', dragover);
+		tab.addEventListener('click', tab_clicked);
+		tab.addEventListener('dragstart', drag_start);
+		tab.addEventListener('dragover', drag_over);
+		tab.addEventListener('dragenter', drag_enter);
+		tab.addEventListener('dragleave', drag_leave);
 		tab.addEventListener('drop', drop);
-		var closeButtonClicked;
+		var close_button_clicked;
 		if(closable){
-		    closeButtonClicked = function(ev){
+		    close_button_clicked = function(ev){
 			tabList.$tabclose(this.parentElement);
 			ev.stopPropagation();
 		    };
-		    close_button.addEventListener('click', closeButtonClicked);
+		    close_button.addEventListener('click', close_button_clicked);
 		}
 		this.appendChild(tab);
 	    },
-	    $swapTab: function(tab1, tab2){
-		var temp = create('widget-tab');
-		this.insertBefore(temp, tab1);
-		this.insertBefore(tab1, tab2);
-		this.insertBefore(tab2, temp);
-		this.removeChild(temp);
+	    $moveTab: function(tab1, tab2){
+		if(!tab1.nextElementSibling){
+		    this.appendChild(tab2);
+		}else{
+		    let iterator = nextElementIterator(tab2);
+		    let top2bottom = false;
+		    for(let node of iterator){
+			if(node == tab1){
+			    top2bottom = true;
+			    break;
+			}
+		    }
+		    if(top2bottom){
+			if(!tab1.nextElementSibling)
+			    this.appendChild(tab2);
+			else
+			    this.insertBefore(tab2, tab1.nextElementSibling);
+		    }else{
+			this.insertBefore(tab2, tab1);
+		    }
+		}
 	    },
 	    $change: function(tab){
 		var widget = this.$map.get(tab);
@@ -149,15 +179,12 @@ var Widget = {
 		var prev = tab.previousElementSibling;
 		var next = tab.nextElementSibling;
 		if(tab == this.$currentTab){
-		    if(next){
-			this.$currentTab = next;
-			next.dataset.current = 'true';
-		    }else if(prev){
-			this.$currentTab = prev;
-			prev.dataset.current = 'true';
-		    }else{
+		    if(next)
+			this.$change(next);
+		    else if(prev)
+			this.$change(prev);
+		    else
 			this.$currentTab = null;
-		    }
 		}
 		this.removeChild(tab);
 		this.$map.delete(tab);
@@ -218,6 +245,9 @@ var Widget = {
 	    },
 	    __proto__: HTMLElement.prototype
 	}
+    }),
+    ModalDialog: document.registerElement('widget-modal-dialog', {
+
     })
 }
 
