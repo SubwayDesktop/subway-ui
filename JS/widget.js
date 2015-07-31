@@ -230,22 +230,6 @@ var Widget = {
 	    __proto__: HTMLElement.prototype
 	}
     }),
-    Message: document.registerElement('widget-message', {
-	prototype: {
-	    createdCallback: function(){
-
-	    },
-	    __proto__: HTMLElement.prototype
-	}
-    }),
-    ChatBox: document.registerElement('widget-chat-box', {
-	prototype: {
-	    createdCallback: function(){
-
-	    },
-	    __proto__: HTMLElement.prototype
-	}
-    }),
     ModalDialog: document.registerElement('widget-modal-dialog', {
 
     })
