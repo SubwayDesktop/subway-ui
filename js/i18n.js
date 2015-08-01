@@ -22,7 +22,7 @@ var gettext = new Gettext();
 function init_i18n(){
     /* UNIX-like only now */
     let lang = process.env.LANGUAGE || process.env.LC_ALL || process.env.LC_MESSAGES || process.env.LANG;
-    lang = lang.replace(/\..*/, '');
+    lang = lang.replace(/\..*/, '').replace(/:.*/, '');
     if(!lang)
 	return;
     let file = printf('locale/%1/LC_MESSAGES/%2.mo', lang, APP_NAME);
