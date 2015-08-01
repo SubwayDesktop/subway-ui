@@ -1,5 +1,5 @@
-JS = JS/layout.js JS/widget.js JS/i18n.js JS/fs.js
-CSS = CSS/layout.css CSS/widget.css
+JS = js/layout.js js/widget.js js/i18n.js js/fs.js
+CSS = css/layout.css css/widget.css
 
 
 all: $(JS) $(CSS)
