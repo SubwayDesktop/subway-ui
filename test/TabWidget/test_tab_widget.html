@@ -19,13 +19,13 @@
 	    add: '#add'
 	});
 	tabs = new Binding.TabWidget(test_tab_list, test_tab_content);
-	tabs.addTab(create('span', '1'), 'Tab_1', false);
-	tabs.addTab(create('span', '2'), 'Tab_2', true);
-	tabs.addTab(create('span', '3'), 'Tab_3', true);
+	tabs.addTab(create('span', '1'), null, 'Tab_1', false);
+	tabs.addTab(create('span', '2'), null, 'Tab_2', true);
+	tabs.addTab(create('span', '3'), null, 'Tab_3', true);
 	var add_clicked = function(){
 	    count++;
 	    var tab = create('span', String(count));
-	    tabs.addTab(tab, printf('Tab_%1', count), true);
+	    tabs.addTab(tab, null, printf('Tab_%1', count), true);
 	}
 	add.addEventListener('click', add_clicked);
     }

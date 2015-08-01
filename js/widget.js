@@ -251,9 +251,9 @@ var Binding = {
 	tab_list.addEventListener('tabclose', tabClosed);
 	if(!Binding.TabWidget.$init){
 	    assignMethods(Binding.TabWidget, {
-		addTab: function(widget, label, closable){
+		addTab: function(widget, parent, label, closable){
 		    tab_content.addWidget(widget);
-		    tab_list.addTab(widget, label, closable);
+		    tab_list.addTab(widget, parent, label, closable);
 		}
 	    });
 	    Binding.TabWidget.$init = true;
