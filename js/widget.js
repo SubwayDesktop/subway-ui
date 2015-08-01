@@ -65,11 +65,12 @@ var Widget = {
     TabList: document.registerElement('widget-tab-list', {
 	prototype: {
 	    createdCallback: function(){
-		this.$map = new Map();
+		this.$widget_map = new Map();
+		this.$parent_map = new Map();
 		this.$currentTab = null;
 		this.$dragSrc = null;
 	    },
-	    addTab: function(widget, label_text, closable){
+	    addTab: function(widget, parent, label_text, closable){
 		var tabList = this;
 		var label = create('widget-tab-label', label_text);
 		var close_button;
@@ -82,7 +83,8 @@ var Widget = {
 		    this.$currentTab = tab;
 		    tab.dataset.current = 'true';
 		}
-		this.$map.set(tab, widget);
+		this.$widget_map.set(tab, widget);
+		this.$parent_map.set(tab, parent);
 		// ----
 		var tab_clicked = function(){
 		    tabList.$change(this);
@@ -162,7 +164,7 @@ var Widget = {
 		}
 	    },
 	    $change: function(tab){
-		var widget = this.$map.get(tab);
+		var widget = this.$widget_map.get(tab);
 		this.$currentTab.dataset.current = 'false';
 		tab.dataset.current = 'true';
 		this.$currentTab = tab;
@@ -175,7 +177,7 @@ var Widget = {
 		this.dispatchEvent(ev);
 	    },
 	    $tabclose: function(tab){
-		var widget = this.$map.get(tab);
+		var widget = this.$widget_map.get(tab);
 		var prev = tab.previousElementSibling;
 		var next = tab.nextElementSibling;
 		if(tab == this.$currentTab){
@@ -187,13 +189,13 @@ var Widget = {
 			this.$currentTab = null;
 		}
 		this.removeChild(tab);
-		this.$map.delete(tab);
+		this.$widget_map.delete(tab);
 		
 		var ev = new CustomEvent('tabclose', {
 		    detail: {
 			widget: widget,
-			prev: (prev)? this.$map.get(prev): null,
-			next: (next)? this.$map.get(next): null
+			prev: (prev)? this.$widget_map.get(prev): null,
+			next: (next)? this.$widget_map.get(next): null
 		    }
 		});
 		this.dispatchEvent(ev);
