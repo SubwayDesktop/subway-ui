@@ -57,7 +57,6 @@ var Widget = {
 	prototype: {
 	    createdCallback: function(){
 		this.textContent = '\u00D7';
-		this.tab_list = null;
 	    },
 	    __proto__: HTMLElement.prototype
 	}
