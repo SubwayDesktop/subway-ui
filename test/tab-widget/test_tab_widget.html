@@ -4,30 +4,32 @@
     <link rel="stylesheet" href="../../subway_ui.css" />
     <style>
     body { font-family: sans-serif; }
-    #tab_list { width: 6em; }
-    #tab_content span { font-size: 3em; margin: 0.3em; }
+    #tab_bar { width: 6em; }
+    #widget_set span { font-size: 3em; margin: 0.3em; }
     </style>
     <script type="text/javascript" src="../../simple.js"></script>
     <script type="text/javascript" src="../../subway_ui.js"></script>
     <script type="text/javascript">
-    var test_tab_list, test_tab_content, add, tabs, count = 3;
+    var test_tab_bar, test_widget_set, add, tabs, count = 3;
     function init(){
-	i18n.init();	
 	assignGlobalObjects({
-	    test_tab_list: '#tab_list',
-	    test_tab_content: '#tab_content',
-	    add: '#add'
+	    test_tab_bar: '#tab_bar',
+	    test_widget_set: '#widget_set',
+	    checkbox: '#checkbox',
+	    add: '#add'    
 	});
-	tabs = new Binding.TabWidget(test_tab_list, test_tab_content);
-	tabs.addTab(create('span', '1'), null, 'Tab_1', false);
-	tabs.addTab(create('span', '2'), null, 'Tab_2', true);
-	tabs.addTab(create('span', '3'), null, 'Tab_3', true);
-	var add_clicked = function(){
+	tabs = new Binding.TabWidget(test_tab_bar, test_widget_set);
+	tabs.addTab(create('span', '1'), 'Tab_1');
+	tabs.addTab(create('span', '2'), 'Tab_2');
+	tabs.addTab(create('span', '3'), 'Tab_3');
+	add.addEventListener('click', function(){
 	    count++;
 	    var tab = create('span', String(count));
-	    tabs.addTab(tab, null, printf('Tab_%1', count), true);
-	}
-	add.addEventListener('click', add_clicked);
+	    tabs.addTab(tab, printf('Tab_%1', count));
+	});
+	checkbox.addEventListener('change', function(){
+	    test_tab_bar.item_draggable = this.checked;
+	});
     }
     window.addEventListener('load', init);
     </script>
@@ -39,15 +41,22 @@
 	<layout-cell>
 	  <layout-hbox>
 	    <layout-cell fixed="fixed">
-	      <widget-tab-list id="tab_list"></widget-tab-list>
+	      <widget-tab-bar id="tab_bar" layout="vertical"></widget-tab-bar>
 	    </layout-cell>
 	    <layout-cell>
-	      <widget-tab-content id="tab_content"></widget-tab-content>
+	      <widget-set id="widget_set"></widget-set>
 	    </layout-cell>
 	  </layout-hbox>
 	</layout-cell>
 	<layout-cell fixed="fixed">
-	  <button id="add">Add a new tab</button>
+	  <layout-hbox style="justify-content: space-between;">
+	    <layout-cell>
+	      <button id="add">Add a new tab</button>
+	    </layout-cell>
+	    <layout-cell fixed="fixed">
+	      <input type="checkbox" id="checkbox">Draggable</input>
+	    </layout-cell>
+	  </layout-hbox>
 	</layout-cell>
       </layout-vbox>
     </layout-container>
