@@ -4,6 +4,8 @@
 var handlers = {
     drag: {
 	start: function(ev){
+	    if(!this.draggable)
+		return false;
 	    var list = this.parentElement;
 	    list.$dragSrc = this;
 	    ev.dataTransfer.effectAllowed = 'move';
@@ -11,10 +13,14 @@ var handlers = {
 	    ev.dataTransfer.setData('text/plain', 'anything');
 	},
 	over: function(ev){
+	    if(!this.draggable)
+		return false;
 	    ev.preventDefault();
 	    ev.dataTransfer.dropEffect = 'move';
 	},
 	enter: function(ev){
+	    if(!this.draggable)
+		return false;
 	    var list = this.parentElement;
 	    var iterator = nextElementIterator(list.$dragSrc);
 	    var top2bottom = false;
@@ -27,9 +33,13 @@ var handlers = {
 	    this.dataset.drag_enter_state = top2bottom? 'top2bottom': 'bottom2top';
 	},
 	leave: function(ev){
+	    if(!this.draggable)
+		return false;
 	    delete this.dataset.drag_enter_state;
 	},
 	drop: function(ev){
+	    if(!this.draggable)
+		return false;
 	    var list = this.parentElement;
 	    var src = list.$dragSrc;
 	    var insert = Widget.ListView.prototype.insert.bind(list);
@@ -127,16 +137,14 @@ Widget.ListView = document.registerElement('widget-list-view', {
 		    return this.$item_draggable;
 		},
 		set: function(value){
-		    var iterator = nodeListIterator(this.children);
-		    for(let item of iterator)
+		    for(let item of this.childNodes)
 			item.draggable = value;
 		    this.$item_draggable = value;
 		}
 	    });
 	    var observer = new MutationObserver(function(mutations){
 		for(let I of mutations){
-		    let iterator = nodeListIterator(I.addedNodes);
-		    for(let node of iterator)
+		    for(let node of I.addedNodes)
 			node.draggable = I.target.$item_draggable;
 		}
 	    });
