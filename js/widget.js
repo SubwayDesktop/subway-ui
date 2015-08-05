@@ -15,6 +15,13 @@ var handlers = {
 	over: function(ev){
 	    if(!this.draggable)
 		return false;
+	    var list = this.parentElement;
+	    var src = list.$dragSrc;
+	    /* check src to avoid dragging from another list
+	     * the same in other DnD handling functions
+	     */
+	    if(!src)
+		return false;
 	    ev.preventDefault();
 	    ev.dataTransfer.dropEffect = 'move';
 	},
@@ -22,7 +29,10 @@ var handlers = {
 	    if(!this.draggable)
 		return false;
 	    var list = this.parentElement;
-	    var iterator = nextElementIterator(list.$dragSrc);
+	    var src = list.$dragSrc;
+	    if(!src)
+		return false;
+	    var iterator = nextElementIterator(src);
 	    var top2bottom = false;
 	    for(let node of iterator){
 		if(node == this){
@@ -35,6 +45,10 @@ var handlers = {
 	leave: function(ev){
 	    if(!this.draggable)
 		return false;
+	    var list = this.parentElement;
+	    var src = list.$dragSrc;
+	    if(!src)
+		return false;
 	    delete this.dataset.drag_enter_state;
 	},
 	drop: function(ev){
@@ -46,9 +60,8 @@ var handlers = {
 	    ev.preventDefault();
 	    ev.stopPropagation();
 	    delete this.dataset.drag_enter_state;
-	    /* avoid dragging from another tab list */
 	    if(!src)
-		return;
+		return false;
 	    if(this != src){
 		if(!this.nextElementSibling){
 		    insert(src);
