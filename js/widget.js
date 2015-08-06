@@ -89,6 +89,31 @@ var handlers = {
 	    var tab_bar = this.parentElement;
 	    tab_bar.setCurrentTab(tab_bar.$widget_map.get(this));
 	}
+    },
+    tree_expand_button: {
+	click: function(){
+	    if(this.textContent == '\u25b6'){
+		/* expand */
+		this.textContent = '\u25bc';
+		this.dispatchEvent(new CustomEvent('expand'));
+	    }else{
+		/* shrink */
+		this.textContent = '\u25b6';
+		this.dispatchEvent(new CustomEvent('shrink'));
+	    }
+	},
+	expand: function(){
+	    var tr = this.parentElement.parentElement;
+	    tr.expanded = true;
+	    for(let child of tr.logical_children)
+		show(child);
+	},
+	shrink: function(){
+	    var tr = this.parentElement.parentElement;
+	    tr.expanded = false;
+	    for(let child of tr.logical_children)
+		hide(child);
+	}
     }
 };
     
@@ -266,12 +291,13 @@ Widget.TabBar = document.registerElement('widget-tab-bar', {
 		}
 	    });
 	},
-	addTab: function(widget, label_text){
+	addTab: function(widget, tab_content){
 	    /* The argument 'widget' can be a symbol of all types.
 	     * String, HTMLElement and Symbol are all OK.
+	     * 'tab_content' is overloaded. See create() below.
 	     */
 	    var tab_bar = this;
-	    var tab = create('widget-tab', label_text);
+	    var tab = create('widget-tab', tab_content);
 	    if(this.children.length){
 		tab.current = false;
 	    }else{
@@ -329,6 +355,81 @@ Widget.TabBar = document.registerElement('widget-tab-bar', {
 	__proto__: Widget.ListView.prototype
     }
 });
+
+
+/* untested code */
+/*
+Widget.TreeExpandButton = document.registerElement('widget-tree-expand-button', {
+    prototype: {
+	createdCallback: function(){
+	    Widget.TextButton.prototype.createdCallback.call(this);
+	    this.textContent = '\u25b6';
+	    this.addEventListener('click', handlers.tree_expand_button.click);
+	},
+	__proto__: Widget.TextButton.prototype
+    }
+});
+
+
+Widget.TableView = document.registerElement('widget-table-view', {
+    prototype: {
+	createdCallback: function(){
+	    Widget.Widget.prototype.createdCallback.call(this);
+	    this.$symbol_map = new Map();
+	    var table = create('table');
+	    var tbody = create('tbody');
+	    this.$tbody = tbody;
+	    this.appendChild(table);
+	    table.appendChild(tbody);
+	    Object.defineProperty(this, 'non-tree', {
+		get: function(){
+		    return this.getAttribute('non-tree');
+		},
+		set: function(value){
+		    this.setAttribute('non-tree', value);
+		}
+	    });
+	},
+	addRow: function(symbol, columns, parent){
+	    var tr = create('tr');
+	    for(let col of columns){
+		let td = create('td', col);
+		tr.appendChild(td);
+	    }
+
+	    var first_col = tr.firstChild;
+	    var expand_button = create('widget-tree-expand-button');
+	    if(first_col.children.length)
+		first_col.insertBefore(first_col.firstChild, expand_button);
+	    else
+		first_col.appendChild(expand_button);
+	    tr.expanded = false;
+	    expand_button.addEventListener('expand', handlers.tree_expand_button.expand);
+	    expand_button.addEventListener('shrink', handlers.tree_expand_button.shrink);
+
+	    if(!parent){
+		tr.logical_parent = null;
+		this.$tbody.appendChild(tr);
+	    }else{
+		let parent_row = this.$symbol_map.get(parent);
+		tr.logical_parent = parent_row;
+		if(!parent_row.expanded)
+		    hide(tr);
+		let children = parent_row.logical_children;
+		if(!children.length){
+		    insertAfter(tr, parent_row);
+		}else{
+		    insertAfter(tr, children[children.length-1]);
+		}
+		children.push(tr);
+	    }
+	    tr.logical_children = [];
+	    this.$symbol_map.set(symbol, tr);
+	},
+	__proto__: Widget.Widget.prototype
+    }
+});
+*/
 
 
 Widget.ModalDialog = document.registerElement('widget-modal-dialog', {
