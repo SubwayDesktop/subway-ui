@@ -56,7 +56,7 @@ var handlers = {
 		return false;
 	    var list = this.parentElement;
 	    var src = list.$dragSrc;
-	    var insert = Widget.ListView.prototype.insert.bind(list);
+	    var insert = Widget.List.prototype.insert.bind(list);
 	    ev.preventDefault();
 	    ev.stopPropagation();
 	    delete this.dataset.drag_enter_state;
@@ -164,7 +164,7 @@ Widget.ListItem = document.registerElement('widget-list-item', {
 });
 
 
-Widget.ListView = document.registerElement('widget-list-view', {
+Widget.List = document.registerElement('widget-list', {
     prototype: {
 	createdCallback: function(){
 	    Widget.Widget.prototype.createdCallback.call(this);
@@ -274,7 +274,7 @@ Widget.Tab = document.registerElement('widget-tab', {
 Widget.TabBar = document.registerElement('widget-tab-bar', {
     prototype: {
 	createdCallback: function(){
-	    Widget.ListView.prototype.createdCallback.call(this);	    
+	    Widget.List.prototype.createdCallback.call(this);
 	    this.$widget_map = new Map();
 	    this.$tab_map = new Map();
 	    this.$currentTab = null;		
@@ -352,13 +352,11 @@ Widget.TabBar = document.registerElement('widget-tab-bar', {
 	    });
 	    this.dispatchEvent(ev);
 	},
-	__proto__: Widget.ListView.prototype
+	__proto__: Widget.List.prototype
     }
 });
 
 
-/* untested code */
-/*
 Widget.TreeExpandButton = document.registerElement('widget-tree-expand-button', {
     prototype: {
 	createdCallback: function(){
@@ -429,7 +427,6 @@ Widget.TableView = document.registerElement('widget-table-view', {
 	__proto__: Widget.Widget.prototype
     }
 });
-*/
 
 
 Widget.ModalDialog = document.registerElement('widget-modal-dialog', {
@@ -440,7 +437,7 @@ Widget.ModalDialog = document.registerElement('widget-modal-dialog', {
 	__proto__: Widget.Widget.prototype
     }
 });
- 
+
 
 var Binding = {
     TabWidget: function(tab_bar, widget_set){
