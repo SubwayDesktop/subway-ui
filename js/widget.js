@@ -226,14 +226,11 @@ Widget.Set = document.registerElement('widget-set', {
 		this.$currentWidget = widget;
 	    this.appendChild(widget);
 	},
-	removeWidget: function(widget, prev, next){
+	removeWidget: function(widget, new_current){
 	    if(widget == this.$currentWidget){
-		if(next){
-		    show(next);
-		    this.$currentWidget = next;
-		}else if(prev){
-		    show(prev);
-		    this.$currentWidget = prev;
+		if(new_current){
+		    show(new_current);
+		    this.$currentWidget = new_current;
 		}else{
 		    this.$currentWidget = null;
 		}
@@ -331,13 +328,18 @@ Widget.TabBar = document.registerElement('widget-tab-bar', {
 	    var next = tab.nextElementSibling;
 	    var prev_widget = this.$widget_map(prev);
 	    var next_widget = this.$widget_map(next);
+	    var current_widget;
 	    if(tab == this.$currentTab){
-		if(next)
+		if(next){
 		    this.setCurrentTab(next_widget);
-		else if(prev)
+		    current_widget = next_widget;
+		}else if(prev){
 		    this.setCurrentTab(prev_widget);
-		else
+		    current_widget = prev_widget;
+		}else{
 		    this.$currentTab = null;
+		    current_widget = null;
+		}
 	    }
 	    this.remove(tab);
 	    this.$widget_map.delete(tab);
@@ -345,9 +347,8 @@ Widget.TabBar = document.registerElement('widget-tab-bar', {
 	    
 	    var ev = new CustomEvent('tabclose', {
 		detail: {
-		    widget: widget,
-		    prev: (prev)? prev_widget: null,
-		    next: (next)? next_widget: null
+		    removed: widget,
+		    current: current_widget
 		}
 	    });
 	    this.dispatchEvent(ev);
@@ -446,7 +447,7 @@ var Binding = {
 	    widget_set.setCurrentWidget(ev.detail.widget);
 	};
 	var tabClosed = function(ev){
-	    widget_set.removeWidget(ev.detail.widget, ev.detail.prev, ev.detail.next);
+	    widget_set.removeWidget(ev.detail.removed, ev.detail.current);
 	};
 	tab_bar.addEventListener('change', tabChanged);
 	tab_bar.addEventListener('tabclose', tabClosed);
