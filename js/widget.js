@@ -92,27 +92,27 @@ var handlers = {
     },
     tree_expand_button: {
 	click: function(){
-	    if(this.textContent == '\u25b6'){
-		/* expand */
-		this.textContent = '\u25bc';
+	    if(this.textContent == '\u25b6')
 		this.dispatchEvent(new CustomEvent('expand'));
-	    }else{
-		/* shrink */
-		this.textContent = '\u25b6';
+	    else
 		this.dispatchEvent(new CustomEvent('shrink'));
-	    }
 	},
 	expand: function(){
 	    var tr = this.parentElement.parentElement;
 	    tr.expanded = true;
 	    for(let child of tr.logical_children)
 		show(child);
+	    this.textContent = '\u25bc';
 	},
-	shrink: function(){
+	shrink: function (){
 	    var tr = this.parentElement.parentElement;
 	    tr.expanded = false;
-	    for(let child of tr.logical_children)
+	    for(let child of tr.logical_children){
+		if(child.logical_children.length)
+		    child.querySelector('widget-tree-expand-button').dispatchEvent(new CustomEvent('shrink'));
 		hide(child);
+	    }
+	    this.textContent = '\u25b6';
 	}
     }
 };
@@ -392,7 +392,7 @@ Widget.TableView = document.registerElement('widget-table-view', {
 		}
 	    });
 	},
-	addRow: function(symbol, columns, parent){
+	addRow: function(symbol, parent, columns){
 	    var tr = create('tr');
 	    for(let col of columns){
 		let td = create('td', col);
@@ -402,14 +402,14 @@ Widget.TableView = document.registerElement('widget-table-view', {
 	    var first_col = tr.firstChild;
 	    var expand_button = create('widget-tree-expand-button');
 	    if(first_col.children.length)
-		first_col.insertBefore(first_col.firstChild, expand_button);
+		insertBefore(expand_button, first_col.firstChild);
 	    else
 		first_col.appendChild(expand_button);
 	    tr.expanded = false;
 	    expand_button.addEventListener('expand', handlers.tree_expand_button.expand);
 	    expand_button.addEventListener('shrink', handlers.tree_expand_button.shrink);
 
-	    if(!parent){
+	    if(!parent && parent !== 0){
 		tr.logical_parent = null;
 		this.$tbody.appendChild(tr);
 	    }else{
@@ -423,7 +423,16 @@ Widget.TableView = document.registerElement('widget-table-view', {
 		}else{
 		    insertAfter(tr, children[children.length-1]);
 		}
+		if(typeof parent_row.dataset.has_child == 'undefined')
+		    parent_row.dataset.has_child = '';
 		children.push(tr);
+
+		let count = 0;
+		while(parent_row){
+		    parent_row = parent_row.logical_parent;
+		    count++;
+		}
+		expand_button.style.marginLeft = printf('%1em', 0.5*count);
 	    }
 	    tr.logical_children = [];
 	    this.$symbol_map.set(symbol, tr);

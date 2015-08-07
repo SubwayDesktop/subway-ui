@@ -1,3 +1,11 @@
+widget-text-button {
+    font-family: monospace;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+
 widget-text-button[default_hidden="true"] {
     color: rgba(0, 0, 0, 0);
 }
@@ -11,6 +19,7 @@ widget-text-button[default_hidden="true"]:hover {
 widget-tab {
     text-align: center;
     cursor: pointer;
+    user-select: none;
     -webkit-user-select: none;
 }
 
@@ -56,6 +65,35 @@ widget-tab-bar[layout="vertical"] > widget-tab[data-drag_enter_state="top2bottom
 
 widget-tab-bar[layout="vertical"] > widget-tab[data-drag_enter_state="bottom2top"] {
     box-shadow: inset 0em 0.1em gold;
+}
+
+
+widget-tree-expand-button {
+    margin-right: 0.2em;
+    visibility: hidden;
+
+    /* Inherit from widget-text-button */
+    font-family: monospace;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+
+widget-tree-expand-button[default_hidden="true"] {
+    /* Inherit from widget-text-button */
+    color: rgba(0, 0, 0, 0);
+}
+
+
+widget-tree-expand-button[default_hidden="true"]:hover {
+    /* Inherit from widget-text-button */
+    color: inherit;
+}
+
+
+tr[data-has_child] > td:first-child > widget-tree-expand-button {
+    visibility: visible;
 }
 
 

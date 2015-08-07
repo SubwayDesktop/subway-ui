@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../../subway_ui.css" />
+    <style>
+    body { font-family: sans-serif; }
+    </style>
+    <script type="text/javascript" src="../../simple.js"></script>
+    <script type="text/javascript" src="../../subway_ui.js"></script>
+    <script type="text/javascript">
+    'use strict';
+    var table_view;
+    function init(){
+	assignGlobalObjects({
+	    table_view: '#table_view'
+	});
+	for(let i=0; i<5; i++)
+	    table_view.addRow(i, null, [
+		[
+		    create('span', printf('row %1 column 0', i))
+		],
+		[
+		    create('span', 'column 1')
+		]
+	    ]);
+	table_view.addRow(6, 0, [
+	    [
+		create('span', '233')
+	    ],
+	    [
+		create('span', '...')
+	    ]
+	]);
+	for(let i=7; i<11; i++)
+	    table_view.addRow(i, 1, [
+		[
+		    create('span', 'foo')
+		],
+		[
+		    create('span' , i.toString())
+		]
+	    ]);
+	table_view.addRow(11, 8, [
+	    [
+		create('span', 'bar')
+	    ],
+	    [
+		create('span', '11')
+	    ]
+	]);
+    }
+    window.addEventListener('load', init);
+    </script>
+    <title>Table View Test</title>
+  </head>
+  <body>
+    <layout-container>
+      <widget-table-view id="table_view"></widget-table-view>
+    </layout-container>
+  </body>
+</html>
