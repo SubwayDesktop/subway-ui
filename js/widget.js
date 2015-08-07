@@ -278,7 +278,7 @@ Widget.TabBar = document.registerElement('widget-tab-bar', {
 	    Widget.List.prototype.createdCallback.call(this);
 	    this.$symbol_map = new Map();
 	    this.$tab_map = new Map();
-	    this.$currentTab = null;		
+	    this.$currentTab = null;
 	    Object.defineProperty(this, 'currentTab', {
 		get: this.getCurrentTab,
 		set: this.setCurrentTab
@@ -293,7 +293,8 @@ Widget.TabBar = document.registerElement('widget-tab-bar', {
 	    });
 	},
 	addTab: function(symbol, tab_content){
-	    /* The argument 'symbol' can be a symbol of all types.
+	    /* The argument 'symbol' can be a symbol of all types
+	     * except false value (not including Number zero).
 	     * String, HTMLElement and Symbol are all OK.
 	     * 'tab_content' is overloaded. See create() below.
 	     */
@@ -377,6 +378,7 @@ Widget.TableView = document.registerElement('widget-table-view', {
     prototype: {
 	createdCallback: function(){
 	    Widget.Widget.prototype.createdCallback.call(this);
+	    this.$row_map = new Map();
 	    this.$symbol_map = new Map();
 	    var table = create('table');
 	    var tbody = create('tbody');
@@ -413,7 +415,7 @@ Widget.TableView = document.registerElement('widget-table-view', {
 		tr.logical_parent = null;
 		this.$tbody.appendChild(tr);
 	    }else{
-		let parent_row = this.$symbol_map.get(parent);
+		let parent_row = this.$row_map.get(parent);
 		tr.logical_parent = parent_row;
 		if(!parent_row.expanded)
 		    hide(tr);
@@ -435,7 +437,22 @@ Widget.TableView = document.registerElement('widget-table-view', {
 		expand_button.style.marginLeft = printf('%1em', 0.5*count);
 	    }
 	    tr.logical_children = [];
-	    this.$symbol_map.set(symbol, tr);
+	    this.$symbol_map.set(tr, symbol);
+	    this.$row_map.set(symbol, tr);
+	},
+	removeRow: function(symbol, tr){
+	    /* simulate overload */
+	    if(!tr)
+		tr = this.$row_map.get(symbol);
+	    for(let child of tr.logical_children)
+		this.removeRow(null, child);
+	    tr.parentElement.removeChild(tr);
+	    var ev = new CustomEvent('remove', {
+		detail: {
+		    removed: this.$symbol_map.get(tr)
+		}
+	    });
+	    this.dispatchEvent(ev);
 	},
 	__proto__: Widget.Widget.prototype
     }
