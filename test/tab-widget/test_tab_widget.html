@@ -10,13 +10,14 @@
     <script type="text/javascript" src="../../simple.js"></script>
     <script type="text/javascript" src="../../subway_ui.js"></script>
     <script type="text/javascript">
-    var test_tab_bar, test_widget_set, add, tabs, count = 3;
+    var test_tab_bar, test_widget_set, add, rm, tabs, count = 3;
     function init(){
 	assignGlobalObjects({
 	    test_tab_bar: '#tab_bar',
 	    test_widget_set: '#widget_set',
 	    checkbox: '#checkbox',
-	    add: '#add'    
+	    add: '#add',
+	    rm: '#rm'
 	});
 	tabs = new Binding.TabWidget(test_tab_bar, test_widget_set);
 	tabs.addTab(create('span', '1'), 'Tab_1');
@@ -24,8 +25,11 @@
 	tabs.addTab(create('span', '3'), 'Tab_3');
 	add.addEventListener('click', function(){
 	    count++;
-	    var tab = create('span', String(count));
-	    tabs.addTab(tab, printf('Tab_%1', count));
+	    var span = create('span', String(count));
+	    tabs.addTab(span, printf('Tab_%1', count));
+	});
+	rm.addEventListener('click', function(){
+	    tabs.removeTab(tabs.currentWidget);
 	});
 	checkbox.addEventListener('change', function(){
 	    test_tab_bar.item_draggable = this.checked;
@@ -52,6 +56,7 @@
 	  <layout-hbox style="justify-content: space-between;">
 	    <layout-cell>
 	      <button id="add">Add a new tab</button>
+	      <button id="rm">Remove current tab</button>
 	    </layout-cell>
 	    <layout-cell fixed="fixed">
 	      <input type="checkbox" id="checkbox">Draggable</input>

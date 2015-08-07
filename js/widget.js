@@ -87,7 +87,7 @@ var handlers = {
     tab: {
 	click: function(){
 	    var tab_bar = this.parentElement;
-	    tab_bar.setCurrentTab(tab_bar.$widget_map.get(this));
+	    tab_bar.setCurrentTab(tab_bar.$symbol_map.get(this));
 	}
     },
     tree_expand_button: {
@@ -218,6 +218,10 @@ Widget.Set = document.registerElement('widget-set', {
 	createdCallback: function(){
 	    Widget.Widget.prototype.createdCallback.call(this);
 	    this.$currentWidget = null;
+	    Object.defineProperty(this, 'currentWidget', {
+		get: this.getCurrentWidget,
+		set: this.setCurrentWidget
+	    });
 	},
 	addWidget: function(widget){
 	    if(this.children.length)
@@ -272,7 +276,7 @@ Widget.TabBar = document.registerElement('widget-tab-bar', {
     prototype: {
 	createdCallback: function(){
 	    Widget.List.prototype.createdCallback.call(this);
-	    this.$widget_map = new Map();
+	    this.$symbol_map = new Map();
 	    this.$tab_map = new Map();
 	    this.$currentTab = null;		
 	    Object.defineProperty(this, 'currentTab', {
@@ -288,12 +292,11 @@ Widget.TabBar = document.registerElement('widget-tab-bar', {
 		}
 	    });
 	},
-	addTab: function(widget, tab_content){
-	    /* The argument 'widget' can be a symbol of all types.
+	addTab: function(symbol, tab_content){
+	    /* The argument 'symbol' can be a symbol of all types.
 	     * String, HTMLElement and Symbol are all OK.
 	     * 'tab_content' is overloaded. See create() below.
 	     */
-	    var tab_bar = this;
 	    var tab = create('widget-tab', tab_content);
 	    if(this.children.length){
 		tab.current = false;
@@ -301,54 +304,54 @@ Widget.TabBar = document.registerElement('widget-tab-bar', {
 		this.$currentTab = tab;
 		tab.current = true;
 	    }
-	    this.$widget_map.set(tab, widget);
-	    this.$tab_map.set(widget, tab);
+	    this.$symbol_map.set(tab, symbol);
+	    this.$tab_map.set(symbol, tab);
 	    tab.addEventListener('click', handlers.tab.click);
 	    this.insert(tab);
 	},
 	getCurrentTab: function(){
 	    return this.$currentTab;
 	},
-	setCurrentTab: function(widget){
-	    var tab = this.$tab_map.get(widget);
+	setCurrentTab: function(symbol){
+	    var tab = this.$tab_map.get(symbol);
 	    this.$currentTab.current = false;
 	    tab.current = true;
 	    this.$currentTab = tab;
 	    
 	    var ev = new CustomEvent('change', {
 		detail: {
-		    widget: widget
+		    symbol: symbol
 		}
 	    });
 	    this.dispatchEvent(ev);
 	},
-	removeTab: function(widget){
-	    var tab = this.$tab_map.get(widget);
+	removeTab: function(symbol){
+	    var tab = this.$tab_map.get(symbol);
 	    var prev = tab.previousElementSibling;
 	    var next = tab.nextElementSibling;
-	    var prev_widget = this.$widget_map(prev);
-	    var next_widget = this.$widget_map(next);
-	    var current_widget;
+	    var prev_symbol = this.$symbol_map.get(prev);
+	    var next_symbol = this.$symbol_map.get(next);
+	    var current_symbol;
 	    if(tab == this.$currentTab){
 		if(next){
-		    this.setCurrentTab(next_widget);
-		    current_widget = next_widget;
+		    this.setCurrentTab(next_symbol);
+		    current_symbol = next_symbol;
 		}else if(prev){
-		    this.setCurrentTab(prev_widget);
-		    current_widget = prev_widget;
+		    this.setCurrentTab(prev_symbol);
+		    current_symbol = prev_symbol;
 		}else{
 		    this.$currentTab = null;
-		    current_widget = null;
+		    current_symbol = null;
 		}
 	    }
 	    this.remove(tab);
-	    this.$widget_map.delete(tab);
-	    this.$tab_map.delete(widget);
+	    this.$symbol_map.delete(tab);
+	    this.$tab_map.delete(symbol);
 	    
 	    var ev = new CustomEvent('tabclose', {
 		detail: {
-		    removed: widget,
-		    current: current_widget
+		    removed: symbol,
+		    current: current_symbol
 		}
 	    });
 	    this.dispatchEvent(ev);
@@ -444,18 +447,29 @@ var Binding = {
     TabWidget: function(tab_bar, widget_set){
 	var tabWidget = this;
 	var tabChanged = function(ev){
-	    widget_set.setCurrentWidget(ev.detail.widget);
+	    widget_set.setCurrentWidget(ev.detail.symbol);
 	};
 	var tabClosed = function(ev){
 	    widget_set.removeWidget(ev.detail.removed, ev.detail.current);
 	};
 	tab_bar.addEventListener('change', tabChanged);
 	tab_bar.addEventListener('tabclose', tabClosed);
+	Object.defineProperty(this, 'currentWidget', {
+	    get: function(){
+		return widget_set.currentWidget;
+	    },
+	    set: function(widget){
+		widget_set.currentWidget = widget;
+	    }
+	});
 	if(!Binding.TabWidget.$init){
 	    assignMethods(Binding.TabWidget, {
 		addTab: function(widget, label){
 		    widget_set.addWidget(widget);
 		    tab_bar.addTab(widget, label);
+		},
+		removeTab: function(widget){
+		    tab_bar.removeTab(widget);
 		}
 	    });
 	    Binding.TabWidget.$init = true;
