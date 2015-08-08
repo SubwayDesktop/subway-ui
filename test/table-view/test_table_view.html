@@ -4,6 +4,8 @@
     <link rel="stylesheet" href="../../subway_ui.css" />
     <style>
     body { font-family: sans-serif; }
+    table { border-spacing: 0em; }
+    td { padding: 0em 1em; }
     </style>
     <script type="text/javascript" src="../../simple.js"></script>
     <script type="text/javascript" src="../../subway_ui.js"></script>
@@ -14,7 +16,10 @@
 	assignGlobalObjects({
 	    table_view: '#table_view'
 	});
-	for(let i=0; i<5; i++)
+	table_view.init({
+	    row_selectable: true
+	});
+	for(let i=0; i<6; i++)
 	    table_view.addRow(i, null, [
 		[
 		    create('span', printf('row %1 column 0', i))

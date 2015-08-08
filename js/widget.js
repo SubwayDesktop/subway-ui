@@ -90,8 +90,15 @@ var handlers = {
 	    tab_bar.setCurrentTab(tab_bar.$symbol_map.get(this));
 	}
     },
-    tree_expand_button: {
+    table_view_row: {
 	click: function(){
+	    var table_view = this.table_view;
+	    table_view.setCurrentRow(table_view.$symbol_map.get(this));
+	}
+    },
+    tree_expand_button: {
+	click: function(ev){
+	    ev.stopPropagation();
 	    if(this.textContent == '\u25b6')
 		this.dispatchEvent(new CustomEvent('expand'));
 	    else
@@ -109,8 +116,15 @@ var handlers = {
 	    tr.expanded = false;
 	    for(let child of tr.logical_children){
 		if(child.logical_children.length)
-		    child.querySelector('widget-tree-expand-button').dispatchEvent(new CustomEvent('shrink'));
+		    child.expand_button.dispatchEvent(new CustomEvent('shrink'));
 		hide(child);
+	    }
+	    if(tr.table_view.$row_selectable && tr.table_view.$currentRow){
+		/* there may be something with low performance */
+		if(tr.table_view.$currentRow.style.display == 'none'){
+		    let symbol = tr.table_view.$symbol_map.get(tr);
+		    tr.table_view.setCurrentRow(symbol);
+		}
 	    }
 	    this.textContent = '\u25b6';
 	}
@@ -311,10 +325,12 @@ Widget.TabBar = document.registerElement('widget-tab-bar', {
 	    this.insert(tab);
 	},
 	getCurrentTab: function(){
-	    return this.$currentTab;
+	    return this.$symbol_map.get(this.$currentTab);
 	},
 	setCurrentTab: function(symbol){
 	    var tab = this.$tab_map.get(symbol);
+	    if(tab == this.$currentTab)
+		return;
 	    this.$currentTab.current = false;
 	    tab.current = true;
 	    this.$currentTab = tab;
@@ -332,18 +348,13 @@ Widget.TabBar = document.registerElement('widget-tab-bar', {
 	    var next = tab.nextElementSibling;
 	    var prev_symbol = this.$symbol_map.get(prev);
 	    var next_symbol = this.$symbol_map.get(next);
-	    var current_symbol;
 	    if(tab == this.$currentTab){
-		if(next){
+		if(next)
 		    this.setCurrentTab(next_symbol);
-		    current_symbol = next_symbol;
-		}else if(prev){
+		else if(prev)
 		    this.setCurrentTab(prev_symbol);
-		    current_symbol = prev_symbol;
-		}else{
+		else
 		    this.$currentTab = null;
-		    current_symbol = null;
-		}
 	    }
 	    this.remove(tab);
 	    this.$symbol_map.delete(tab);
@@ -351,8 +362,7 @@ Widget.TabBar = document.registerElement('widget-tab-bar', {
 	    
 	    var ev = new CustomEvent('tabclose', {
 		detail: {
-		    removed: symbol,
-		    current: current_symbol
+		    removed: symbol
 		}
 	    });
 	    this.dispatchEvent(ev);
@@ -385,16 +395,37 @@ Widget.TableView = document.registerElement('widget-table-view', {
 	    this.$tbody = tbody;
 	    this.appendChild(table);
 	    table.appendChild(tbody);
-	    Object.defineProperty(this, 'non-tree', {
-		get: function(){
-		    return this.getAttribute('non-tree');
-		},
-		set: function(value){
-		    this.setAttribute('non-tree', value);
-		}
+	    Object.defineProperty(this, 'currentRow', {
+		get: this.getCurrentRow,
+		set: this.setCurrentRow
 	    });
 	},
+	init: function(options){
+	    /* TODO: headers, column properties and multiple choice */
+	    if(options.row_selectable){
+		this.$row_selectable = true;
+		this.$currentRow = null;
+		this.dataset.row_selectable = '';
+	    }else{
+		this.$row_selectable = false;
+	    }
+	    if(options.non_tree)
+		this.dataset.non_tree = '';
+	},
 	addRow: function(symbol, parent, columns){
+	    /* TableView is a bit complicated so that we save data
+	     * on DOM Nodes (tr elements) directly. Added property:
+	     * HTMLTableRowElement tr.logical_parent
+	     * - Logical parent in tree structure
+	     * HTMLTableRowElement[] tr.logical_children
+	     * - Logical children in tree structure
+	     * Boolean tr.expanded
+	     * - Whether the row is expanded
+	     * Widget.TreeExpandButton tr.expand_button
+	     * - Its TreeExpandButton
+	     * Widget.TableView tr.table_view
+	     * - This TableView instance
+	     */
 	    var tr = create('tr');
 	    for(let col of columns){
 		let td = create('td', col);
@@ -410,6 +441,7 @@ Widget.TableView = document.registerElement('widget-table-view', {
 	    tr.expanded = false;
 	    expand_button.addEventListener('expand', handlers.tree_expand_button.expand);
 	    expand_button.addEventListener('shrink', handlers.tree_expand_button.shrink);
+	    tr.expand_button = expand_button;
 
 	    if(!parent && parent !== 0){
 		tr.logical_parent = null;
@@ -437,19 +469,90 @@ Widget.TableView = document.registerElement('widget-table-view', {
 		expand_button.style.marginLeft = printf('%1em', 0.5*count);
 	    }
 	    tr.logical_children = [];
+
+	    if(this.$row_selectable)
+		tr.addEventListener('click', handlers.table_view_row.click);
+
 	    this.$symbol_map.set(tr, symbol);
 	    this.$row_map.set(symbol, tr);
+	    tr.table_view = this;
 	},
-	removeRow: function(symbol, tr){
-	    /* simulate overload */
-	    if(!tr)
-		tr = this.$row_map.get(symbol);
-	    for(let child of tr.logical_children)
-		this.removeRow(null, child);
-	    tr.parentElement.removeChild(tr);
+	removeRow: function(symbol){
+	    var	tr = this.$row_map.get(symbol);
+	    var parent = tr.logical_parent;
+	    var prev, next;
+	    var siblings;
+	    if(parent){
+		siblings = parent.logical_children;
+	    }else{
+		/* may need improvement */
+		siblings = [];
+		for(let child of this.$tbody.childNodes)
+		    if(!child.logical_parent)
+			siblings.push(child);
+	    }
+	    for(let i=0; i<siblings.length; i++){
+		if(siblings[i] == tr){
+		    prev = siblings[i-1];
+		    next = siblings[i+1];
+		    if(parent)
+			siblings.splice(i, 1);
+		}
+	    }
+	    if(parent && parent.logical_children.length == 1){
+		let ev = new CustomEvent('shrink');
+		parent.expand_button.dispatchEvent(ev);
+		delete parent.dataset.has_child;
+	    }
+	    var removed = this.$removeRow(tr);
+	    if(this.$row_selectable && this.$currentRow){
+		if(!this.$currentRow.parentElement){
+		    if(next)
+			this.setCurrentRow(this.$symbol_map.get(next));
+		    else if(prev)
+			this.setCurrentRow(this.$symbol_map.get(prev));
+		    else if(parent)
+			this.setCurrentRow(this.$symbol_map.get(parent));
+		    else
+			this.$currentRow = null;
+		}
+	    }
 	    var ev = new CustomEvent('remove', {
 		detail: {
-		    removed: this.$symbol_map.get(tr)
+		    removed: removed
+		}
+	    });
+	    this.dispatchEvent(ev);
+	},
+	$removeRow: function(tr){
+	    var symbol = this.$symbol_map.get(tr);
+	    var removed = [];
+
+	    for(let child of tr.logical_children)
+		removed = removed.concat(this.$removeRow(child));
+	    this.$tbody.removeChild(tr);
+
+	    removed.push(symbol);
+	    return removed;
+	},
+	getCurrentRow: function(){
+	    if(!this.$row_selectable)
+		throw Error('Rows of this TableView instance is unselectable');
+	    return this.$symbol_map.get(this.$currentRow);
+	},
+	setCurrentRow: function(symbol){
+	    if(!this.$row_selectable)
+		throw Error('Rows of this TableView instance is unselectable');
+	    var tr = this.$row_map.get(symbol);
+	    if(tr == this.$currentRow)
+		return;
+	    if(this.$currentRow)
+		delete this.$currentRow.dataset.current;
+	    tr.dataset.current = '';
+	    this.$currentRow = tr;
+	    var ev = new CustomEvent('change', {
+		detail:{
+		    symbol: symbol
 		}
 	    });
 	    this.dispatchEvent(ev);

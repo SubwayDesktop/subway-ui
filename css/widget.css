@@ -1,4 +1,4 @@
-widget-text-button {
+widget-text-button, widget-tree-expand-button {
     font-family: monospace;
     cursor: pointer;
     user-select: none;
@@ -6,12 +6,12 @@ widget-text-button {
 }
 
 
-widget-text-button[default_hidden="true"] {
+widget-text-button[default_hidden="true"], widget-tree-expand-button[default_hidden="true"] {
     color: rgba(0, 0, 0, 0);
 }
 
 
-widget-text-button[default_hidden="true"]:hover {
+widget-text-button[default_hidden="true"]:hover, widget-tree-expand-button[default_hidden="true"]:hover {
     color: inherit;
 }
 
@@ -71,24 +71,6 @@ widget-tab-bar[layout="vertical"] > widget-tab[data-drag_enter_state="bottom2top
 widget-tree-expand-button {
     margin-right: 0.2em;
     visibility: hidden;
-
-    /* Inherit from widget-text-button */
-    font-family: monospace;
-    cursor: pointer;
-    user-select: none;
-    -webkit-user-select: none;
-}
-
-
-widget-tree-expand-button[default_hidden="true"] {
-    /* Inherit from widget-text-button */
-    color: rgba(0, 0, 0, 0);
-}
-
-
-widget-tree-expand-button[default_hidden="true"]:hover {
-    /* Inherit from widget-text-button */
-    color: inherit;
 }
 
 
@@ -97,6 +79,18 @@ tr[data-has_child] > td:first-child > widget-tree-expand-button {
 }
 
 
-widget-table-view[non-tree="true"] widget-tree-expand-button {
+tr[data-current] td {
+    background-color: #FF9;
+}
+
+
+widget-table-view:not([data-selectable]) td {
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+
+widget-table-view[data-non-tree] widget-tree-expand-button {
     display: none;
 }
