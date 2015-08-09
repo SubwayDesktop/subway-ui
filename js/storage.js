@@ -2,7 +2,7 @@
 
 
 const APP_NAME = require('nw.gui').App.manifest.name;
-const BASE_DIR = (process.platform == 'win32')? process.env['LOCALAPPDATA'] + '/Subway': process.env['HOME'] + '/.subway';
+const BASE_DIR = (process.platform == 'win32')? process.env['LOCALAPPDATA'] + '/SubwayUI': process.env['HOME'] + '/.subway_ui';
 const DATA_DIR = BASE_DIR + '/data';
 const RECORD_DIR = BASE_DIR + '/record';
 const SETTINGS_DIR = BASE_DIR + '/settings';
