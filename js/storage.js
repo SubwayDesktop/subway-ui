@@ -25,7 +25,7 @@ function path(){
 }
 
 
-function init_fs(options){
+function init_storage(options){
     record_file = path(RECORD_DIR, APP_NAME);
     settings_file = path(SETTINGS_DIR, APP_NAME);
     data_dir = path(DATA_DIR, APP_NAME);
@@ -63,8 +63,8 @@ function write_record(record){
 }
 
 
-window.FS = {
-    init: init_fs,
+window.DataStorage = {
+    init: init_storage,
     record: {
 	read: read_record,
 	write: write_record
