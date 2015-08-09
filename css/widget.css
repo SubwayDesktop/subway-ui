@@ -94,3 +94,15 @@ widget-table-view:not([data-selectable]) td {
 widget-table-view[data-non-tree] widget-tree-expand-button {
     display: none;
 }
+
+
+widget-modal-dialog {
+    position: absolute;
+    left: 0;
+    height: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
