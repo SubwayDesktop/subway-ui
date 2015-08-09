@@ -4,6 +4,16 @@
 var Layout = {
     Container: document.registerElement('layout-container', {
 	prototype: {
+	    createdCallback: function(){
+		Object.defineProperty(this, 'full', {
+		    get: function(){
+			return this.getAttribute('full');
+		    },
+		    set: function(value){
+			this.setAttribute('full', value);
+		    }
+		});
+	    },
 	    __proto__: HTMLElement.prototype
 	}
     }),

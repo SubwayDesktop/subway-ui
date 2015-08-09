@@ -5,7 +5,7 @@ body {
 }
 
 
-layout-container {
+layout-container[full] {
     width: 100%;
     height: 100%;
 }
