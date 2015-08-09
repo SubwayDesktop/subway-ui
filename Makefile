@@ -1,4 +1,4 @@
-JS = js/layout.js js/widget.js js/i18n.js js/fs.js
+JS = js/layout.js js/widget.js js/i18n.js js/storage.js
 CSS = css/layout.css css/widget.css
 
 
