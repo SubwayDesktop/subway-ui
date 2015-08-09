@@ -33,16 +33,16 @@ function init_storage(options){
 	fs_ext.ensureFileSync(record_file);
     if(options.data)
 	fs_ext.ensureDirSync(data_dir);
-    let default_settings = {};
-    for(let category of options.settings){
-	/* values of items of the current category */
-	let default_values = {};
-	for(let item of category.items)
-	    default_values[item.name] = item.default;
-	/* category.category means name of the current category */
-	default_settings[category.category] = default_values;
-    }
     if(options.settings){
+	let default_settings = {};
+	for(let category of options.settings){
+	    /* values of items of the current category */
+	    let default_values = {};
+	    for(let item of category.items)
+		default_values[item.name] = item.default;
+	    /* category.category means name of the current category */
+	    default_settings[category.category] = default_values;
+	}
 	if(!fs_ext.existsSync(settings_file)){
 	    fs_ext.ensureFileSync(settings_file);
 	    fs_ext.writeJSONFileSync(settings_file, default_settings);
