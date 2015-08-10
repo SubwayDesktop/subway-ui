@@ -6,12 +6,12 @@ widget-text-button, widget-tree-expand-button {
 }
 
 
-widget-text-button[default_hidden="true"], widget-tree-expand-button[default_hidden="true"] {
+widget-text-button[default_hidden], widget-tree-expand-button[default_hidden] {
     color: rgba(0, 0, 0, 0);
 }
 
 
-widget-text-button[default_hidden="true"]:hover, widget-tree-expand-button[default_hidden="true"]:hover {
+widget-text-button[default_hidden]:hover, widget-tree-expand-button[default_hidden]:hover {
     color: inherit;
 }
 

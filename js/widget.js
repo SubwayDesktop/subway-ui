@@ -154,7 +154,7 @@ Widget.TextButton = document.registerElement('widget-text-button', {
 		    return this.getAttribute('default_hidden');	
 		},
 		set: function(value){
-		    this.setAttribute('default_hidden');
+		    this.setAttribute('default_hidden', value);
 		}
 	    });
 	},
