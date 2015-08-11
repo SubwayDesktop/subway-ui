@@ -29,8 +29,14 @@ function init_storage(options){
     record_file = path(BASE_DIR, APP_NAME, RECORD_FILE);
     settings_file = path(BASE_DIR, APP_NAME, SETTINGS_FILE);
     data_dir = path(BASE_DIR, APP_NAME, DATA_DIR);
-    if(options.record)
-	fs_ext.ensureFileSync(record_file);
+    if(options.record){
+	if(!fs_ext.existsSync(record_file)){
+	    fs_ext.ensureFileSync(record_file);
+	    fs_ext.writeJSONFileSync(record_file, {});
+	}else{
+	    fs_ext.ensureFileSync(record_file);
+	}
+    }
     if(options.data)
 	fs_ext.ensureDirSync(data_dir);
     if(options.settings){
