@@ -370,6 +370,12 @@ Widget.TabBar = document.registerElement('widget-tab-bar', {
 	    });
 	    this.dispatchEvent(ev);
 	},
+	changeSymbol: function(old_symbol, new_symbol){
+	    var tab = this.$tab_map(old_symbol);
+	    this.$tab_map.delete(old_symbol);
+	    this.$tab_map.set(new_symbol, tab);
+	    this.$symbol_map.set(tab, new_symbol);
+	},
 	__proto__: Widget.List.prototype
     }
 });
