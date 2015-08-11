@@ -119,7 +119,7 @@ var handlers = {
 		    child.expand_button.dispatchEvent(new CustomEvent('shrink'));
 		hide(child);
 	    }
-	    if(tr.table_view.$row_selectable && tr.table_view.$currentRow){
+	    if(tr.table_view.$selectionMode == 'single' && tr.table_view.$currentRow){
 		/* there may be something with low performance */
 		if(tr.table_view.$currentRow.style.display == 'none'){
 		    let symbol = tr.table_view.$symbol_map.get(tr);
@@ -405,12 +405,12 @@ Widget.TableView = document.registerElement('widget-table-view', {
 	},
 	init: function(options){
 	    /* TODO: headers, column properties and multiple choice */
-	    if(options.row_selectable){
-		this.$row_selectable = true;
+	    if(options.selectionMode == 'single'){
+		this.$selectionMode = 'single';
 		this.$currentRow = null;
-		this.dataset.row_selectable = '';
+		this.dataset.selectable = '';
 	    }else{
-		this.$row_selectable = false;
+		this.$selectionMode = 'none';
 	    }
 	    if(options.non_tree)
 		this.dataset.non_tree = '';
@@ -473,7 +473,7 @@ Widget.TableView = document.registerElement('widget-table-view', {
 	    }
 	    tr.logical_children = [];
 
-	    if(this.$row_selectable)
+	    if(this.$selectionMode == 'single')
 		tr.addEventListener('click', handlers.table_view_row.click);
 
 	    this.$symbol_map.set(tr, symbol);
@@ -508,7 +508,7 @@ Widget.TableView = document.registerElement('widget-table-view', {
 		delete parent.dataset.has_child;
 	    }
 	    var removed = this.$removeRow(tr);
-	    if(this.$row_selectable && this.$currentRow){
+	    if(this.$selectionMode == 'single' && this.$currentRow){
 		if(!this.$currentRow.parentElement){
 		    if(next)
 			this.setCurrentRow(this.$symbol_map.get(next));
@@ -539,12 +539,12 @@ Widget.TableView = document.registerElement('widget-table-view', {
 	    return removed;
 	},
 	getCurrentRow: function(){
-	    if(!this.$row_selectable)
+	    if(this.$selectionMode == 'none')
 		throw Error('Rows of this TableView instance is unselectable');
 	    return this.$symbol_map.get(this.$currentRow);
 	},
 	setCurrentRow: function(symbol){
-	    if(!this.$row_selectable)
+	    if(this.$selectionMode == 'none')
 		throw Error('Rows of this TableView instance is unselectable');
 	    var tr = this.$row_map.get(symbol);
 	    if(tr == this.$currentRow)

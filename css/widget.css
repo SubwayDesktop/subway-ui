@@ -1,7 +1,6 @@
 widget-text-button, widget-tree-expand-button {
     font-family: monospace;
     cursor: pointer;
-    user-select: none;
     -webkit-user-select: none;
 }
 
@@ -19,7 +18,6 @@ widget-text-button[default_hidden]:hover, widget-tree-expand-button[default_hidd
 widget-tab {
     text-align: center;
     cursor: pointer;
-    user-select: none;
     -webkit-user-select: none;
 }
 
@@ -84,9 +82,8 @@ tr[data-current] td {
 }
 
 
-widget-table-view:not([data-selectable]) td {
+widget-table-view[data-selectable] td {
     cursor: default;
-    user-select: none;
     -webkit-user-select: none;
 }
 
