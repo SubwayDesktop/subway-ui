@@ -24,7 +24,7 @@ widget-tab {
 }
 
 
-widget-tab[current="true"] {
+widget-tab[current] {
     font-weight: bold;
 }
 

@@ -274,10 +274,13 @@ Widget.Tab = document.registerElement('widget-tab', {
 	    Widget.ListItem.prototype.createdCallback.call(this);
 	    Object.defineProperty(this, 'current', {
 		get: function(){
-		    return this.getAttribute('current');
+		    return this.hasAttribute('current');
 		},
 		set: function(value){
-		    this.setAttribute('current', value);
+		    if(value)
+			this.setAttribute('current', '');
+		    else
+			this.removeAttribute('current');
 		}
 	    });
 	},
