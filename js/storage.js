@@ -2,10 +2,10 @@
 
 
 const APP_NAME = require('nw.gui').App.manifest.name;
-const BASE_DIR = (process.platform == 'win32')? process.env['LOCALAPPDATA'] + '/SubwayUI': process.env['HOME'] + '/.subway_ui';
-const DATA_DIR = BASE_DIR + '/data';
-const RECORD_DIR = BASE_DIR + '/record';
-const SETTINGS_DIR = BASE_DIR + '/settings';
+const BASE_DIR = (process.platform == 'win32')? process.env['LOCALAPPDATA'] + '/WebApp': process.env['HOME'] + '/.web_app';
+const DATA_DIR = 'data';
+const RECORD_FILE = 'record';
+const SETTINGS_FILE = 'settings';
 
 
 var fs_ext = require('fs-extra');
@@ -26,9 +26,9 @@ function path(){
 
 
 function init_storage(options){
-    record_file = path(RECORD_DIR, APP_NAME);
-    settings_file = path(SETTINGS_DIR, APP_NAME);
-    data_dir = path(DATA_DIR, APP_NAME);
+    record_file = path(BASE_DIR, APP_NAME, RECORD_FILE);
+    settings_file = path(BASE_DIR, APP_NAME, SETTINGS_FILE);
+    data_dir = path(BASE_DIR, APP_NAME, DATA_DIR);
     if(options.record)
 	fs_ext.ensureFileSync(record_file);
     if(options.data)
