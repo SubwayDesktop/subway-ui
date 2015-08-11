@@ -22,11 +22,6 @@ widget-tab {
 }
 
 
-widget-tab[current] {
-    font-weight: bold;
-}
-
-
 widget-tab-bar[layout="horizontal"] {
     display: flex;
     flex-direction: row;
@@ -77,7 +72,8 @@ tr[data-has_child] > td:first-child > widget-tree-expand-button {
 }
 
 
-tr[data-current] td {
+widget-tab[current], tr[data-current] td {
+    /* TODO: style improvement */
     background-color: #FF9;
 }
 
