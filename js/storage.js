@@ -32,7 +32,7 @@ function init_storage(options){
     if(options.record){
 	if(!fs_ext.existsSync(record_file)){
 	    fs_ext.ensureFileSync(record_file);
-	    fs_ext.writeJSONFileSync(record_file, {});
+	    fs_ext.writeJSONFileSync(record_file, options.record);
 	}else{
 	    fs_ext.ensureFileSync(record_file);
 	}
