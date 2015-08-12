@@ -3,20 +3,18 @@ body {
     font-size: 36px;
     color: white;
 }
+
+
 #left {
     background-color: red;
-    flex-basis: 200px;
-    flex-grow: 0;
-    flex-shrink: 0;
 }
-#right {
-    background-color: blue;
-    width: auto;
-}
+
+
 #top {
-    flex-basis: 30%;
+    background-color: blue;
 }
+
+
 #bottom {
-    flex-basis: 70%;
     background-color: green;
 }

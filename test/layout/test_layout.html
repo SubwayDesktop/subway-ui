@@ -9,17 +9,15 @@
   </head>
   <body>
     <layout-container full="full">
-      <layout-HBox>
-	<layout-cell id="left">
-	  <span>fixed width</span>
+      <layout-hbox>
+	<layout-cell id="left" style="flex-basis: 200px;">
+	  fixed width
 	</layout-cell>
-	<layout-cell id="right">
-	  <layout-VBox>
-	    <layout-cell id="top">30% height</layout-cell>
-	    <layout-cell id="bottom">70% height</layout-cell>
-	  </layout-VBox>
-	</layout-cell>
-      </layout-HBox>
+	<layout-vbox grow="grow">
+	  <layout-cell id="top" style="flex-grow: 3;">30% height</layout-cell>
+	  <layout-cell id="bottom" style="flex-grow: 7;">70% height</layout-cell>
+	</layout-vbox>
+      </layout-hbox>
     </layout-container>
   </body>
 </html>

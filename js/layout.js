@@ -17,29 +17,49 @@ var Layout = {
 	    __proto__: HTMLElement.prototype
 	}
     }),
-    HBoxLayout: document.registerElement('layout-HBox', {
+    HBox: document.registerElement('layout-hbox', {
 	prototype: {
+	    createdCallback: function(){
+		Object.defineProperty(this, 'grow', {
+		    get: function(){
+			return this.getAttribute('grow');
+		    },
+		    set: function(value){
+			this.setAttribute('grow', value);
+		    }
+		});
+	    },
 	    __proto__: HTMLElement.prototype
 	}
     }),
-    VBoxLayout: document.registerElement('layout-VBox', {
+    VBox: document.registerElement('layout-vbox', {
 	prototype: {
+	    createdCallback: function(){
+		Object.defineProperty(this, 'grow', {
+		    get: function(){
+			return this.getAttribute('grow');
+		    },
+		    set: function(value){
+			this.setAttribute('grow', value);
+		    }
+		});
+	    },
 	    __proto__: HTMLElement.prototype
 	}
     }),
     Cell: document.registerElement('layout-cell', {
 	prototype: {
-	    __proto__: HTMLElement.prototype,
 	    createdCallback: function(){
-		Object.defineProperty(this, 'fixed', {
+		Object.defineProperty(this, 'grow', {
 		    get: function(){
-			return this.getAttribute('fixed');
+			return this.getAttribute('grow');
 		    },
 		    set: function(value){
-			this.setAttribute('fixed', value);
+			this.setAttribute('grow', value);
 		    }
 		});
-	    }
+	    },
+	    __proto__: HTMLElement.prototype
 	}
     })
 };

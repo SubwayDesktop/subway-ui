@@ -42,27 +42,23 @@
   <body>
     <layout-container full="full">
       <layout-vbox>
-	<layout-cell>
-	  <layout-hbox>
-	    <layout-cell fixed="fixed">
-	      <widget-tab-bar id="tab_bar" layout="vertical"></widget-tab-bar>
-	    </layout-cell>
-	    <layout-cell>
-	      <widget-set id="widget_set"></widget-set>
-	    </layout-cell>
-	  </layout-hbox>
-	</layout-cell>
-	<layout-cell fixed="fixed">
-	  <layout-hbox style="justify-content: space-between;">
-	    <layout-cell>
-	      <button id="add">Add a new tab</button>
-	      <button id="rm">Remove current tab</button>
-	    </layout-cell>
-	    <layout-cell fixed="fixed">
-	      <input type="checkbox" id="checkbox">Draggable</input>
-	    </layout-cell>
-	  </layout-hbox>
-	</layout-cell>
+	<layout-hbox grow="grow">
+	  <layout-cell>
+	    <widget-tab-bar id="tab_bar" layout="vertical"></widget-tab-bar>
+	  </layout-cell>
+	  <layout-cell grow="grow">
+	    <widget-set id="widget_set"></widget-set>
+	  </layout-cell>
+	</layout-hbox>
+	<layout-hbox style="justify-content: space-between;">
+	  <layout-cell>
+	    <button id="add">Add a new tab</button>
+	    <button id="rm">Remove current tab</button>
+	  </layout-cell>
+	  <layout-cell>
+	    <input type="checkbox" id="checkbox">Draggable</input>
+	  </layout-cell>
+	</layout-hbox>
       </layout-vbox>
     </layout-container>
   </body>
