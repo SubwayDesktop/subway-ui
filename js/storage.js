@@ -69,6 +69,11 @@ function write_record(record){
 }
 
 
+function get_setting(){
+    return fs_ext.readJSONFileSync(settings_file);
+}
+
+
 window.DataStorage = {
     init: init_storage,
     record: {
@@ -77,6 +82,9 @@ window.DataStorage = {
     },
     data: {
 	dir: data_dir
+    },
+    settings: {
+	get: get_setting
     }
 };
 
