@@ -11,27 +11,28 @@ var handlers = {
 	    ev.dataTransfer.effectAllowed = 'move';
 	    ev.dataTransfer.setDragImage(new Image(), 0 ,0);
 	    ev.dataTransfer.setData('text/plain', 'anything');
+	    return true;
 	},
 	over: function(ev){
 	    if(!this.draggable)
-		return false;
+		return;
 	    var list = this.parentElement;
 	    var src = list.$dragSrc;
 	    /* check src to avoid dragging from another list
 	     * the same in other DnD handling functions
 	     */
 	    if(!src)
-		return false;
+		return;
 	    ev.preventDefault();
 	    ev.dataTransfer.dropEffect = 'move';
 	},
 	enter: function(ev){
 	    if(!this.draggable)
-		return false;
+		return;
 	    var list = this.parentElement;
 	    var src = list.$dragSrc;
 	    if(!src)
-		return false;
+		return;
 	    var iterator = nextElementIterator(src);
 	    var top2bottom = false;
 	    for(let node of iterator){
@@ -44,16 +45,16 @@ var handlers = {
 	},
 	leave: function(ev){
 	    if(!this.draggable)
-		return false;
+		return;
 	    var list = this.parentElement;
 	    var src = list.$dragSrc;
 	    if(!src)
-		return false;
+		return;
 	    delete this.dataset.drag_enter_state;
 	},
 	drop: function(ev){
 	    if(!this.draggable)
-		return false;
+		return;
 	    var list = this.parentElement;
 	    var src = list.$dragSrc;
 	    var insert = Widget.List.prototype.insert.bind(list);
@@ -61,7 +62,7 @@ var handlers = {
 	    ev.stopPropagation();
 	    delete this.dataset.drag_enter_state;
 	    if(!src)
-		return false;
+		return;
 	    if(this != src){
 		if(!this.nextElementSibling){
 		    insert(src);
@@ -452,7 +453,7 @@ Widget.TableView = document.registerElement('widget-table-view', {
 	    expand_button.addEventListener('shrink', handlers.tree_expand_button.shrink);
 	    tr.expand_button = expand_button;
 
-	    if(!parent && parent !== 0){
+	    if(parent == null){
 		tr.logical_parent = null;
 		this.$tbody.appendChild(tr);
 	    }else{
@@ -491,21 +492,30 @@ Widget.TableView = document.registerElement('widget-table-view', {
 	    var parent = tr.logical_parent;
 	    var prev, next;
 	    var siblings;
-	    if(parent){
+	    if(parent != null){
 		siblings = parent.logical_children;
 	    }else{
-		/* may need improvement */
 		siblings = [];
-		for(let child of this.$tbody.childNodes)
-		    if(!child.logical_parent)
-			siblings.push(child);
+		let it_prev = previousElementIterator(tr);
+		let it_next = nextElementIterator(tr);
+		for(let element of it_prev){
+		    if(element.logical_parent == null){
+			prev = element;
+			break;
+		    }
+		}
+		for(let element of it_next){
+		    if(element.logical_parent == null){
+			next = element;
+			break;
+		    }
+		}
 	    }
 	    for(let i=0; i<siblings.length; i++){
 		if(siblings[i] == tr){
 		    prev = siblings[i-1];
 		    next = siblings[i+1];
-		    if(parent)
-			siblings.splice(i, 1);
+		    siblings.splice(i, 1);
 		}
 	    }
 	    if(parent && parent.logical_children.length == 1){
