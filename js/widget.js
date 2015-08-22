@@ -610,18 +610,15 @@ var Binding = {
 		widget_set.currentWidget = widget;
 	    }
 	});
-	if(!Binding.TabWidget.$init){
-	    assignMethods(Binding.TabWidget, {
-		addTab: function(widget, label){
-		    widget_set.addWidget(widget);
-		    tab_bar.addTab(widget, label);
-		},
-		removeTab: function(widget){
-		    tab_bar.removeTab(widget);
-		}
-	    });
-	    Binding.TabWidget.$init = true;
-	}
+	assignMethods(Binding.TabWidget, {
+	    addTab: function(widget, label){
+		widget_set.addWidget(widget);
+		tab_bar.addTab(widget, label);
+	    },
+	    removeTab: function(widget){
+		tab_bar.removeTab(widget);
+	    }
+	});
     }
 };
 
