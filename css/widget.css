@@ -1,3 +1,13 @@
+widget-widget, widget-list-item, widget-list, widget-set, widget-tab, widget-tab-bar, widget-table-view {
+    display: block;
+}
+
+
+widget-text-button, widget-tree-expand-button {
+    display: inline;
+}
+
+
 widget-text-button, widget-tree-expand-button {
     font-family: monospace;
     cursor: pointer;
