@@ -219,7 +219,7 @@ Widget.List = document.registerElement('widget-list', {
 	    for(let item of items)
 		this.removeChild(item);
 	},
-	empty: function(){
+	clear: function(){
 	    while(this.firstChild)
 		this.removeChild(this.firstChild);
 	},
