@@ -58,6 +58,14 @@ var Layout = {
 			this.setAttribute('grow', value);
 		    }
 		});
+		Object.defineProperty(this, 'fixed', {
+		    get: function(){
+			return this.getAttribute('fixed');
+		    },
+		    set: function(value){
+			this.setAttribute('fixed', value);
+		    }
+		});
 	    },
 	    __proto__: HTMLElement.prototype
 	}

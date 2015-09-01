@@ -25,17 +25,18 @@ widget-text-button[default_hidden]:hover, widget-tree-expand-button[default_hidd
 }
 
 
-layout-cell[grow] > widget-list, layout-cell[grow] > widget-tab-bar, layout-cell[grow] > widget-table-view {
+layout-cell[grow] > widget-list, layout-cell[grow] > widget-tab-bar, layout-cell[grow] > widget-table-view, layout-cell[fixed] > widget-list, layout-cell[fixed] > widget-tab-bar, layout-cell[fixed] > widget-table-view {
     position: absolute;
     top: 0;
     left: 0;
     bottom: 0;
     right: 0;
+    overflow: auto;
 }
 
 
-widget-list, widget-tab-bar, widget-table-view {
-    overflow-y: auto;
+layout-cell[grow] > widget-table-view > table, layout-cell[fixed] > widget-table-view > table {
+    width: 100%;
 }
 
 
