@@ -11,3 +11,7 @@ Required Node.js modules:
 - node-gettext
 
 - fs-extra
+
+## TODO
+
+- Rewrite widgets using event delegation
